@@ -49,8 +49,8 @@ func colocar_bomba():
 # 💥 Método chamado quando o jogador é atingido
 func exploded():
 	print("O jogador foi destruído!") # Mensagem no console
-	#queue_free() # Remove o jogador da cena
-	respawn() # Chama o respawn após ser destruído
+	queue_free() # Remove o jogador da cena
+	#respawn() # Chama o respawn após ser destruído
 
 # 🔄 Método de respawn
 func respawn():

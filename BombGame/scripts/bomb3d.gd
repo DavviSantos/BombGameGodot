@@ -8,10 +8,12 @@ var animplayer : AnimationPlayer = null
 var animSpeed : float = 1.0
 
 # Raio de destruição
-const EXPLOSION_RADIUS = 3.0
+const EXPLOSION_RADIUS = 2.0
 
 # Referência ao GridMap
 onready var gridmap = get_parent().get_node("GridMap") # Atualize o caminho conforme necessário
+
+var explosao_scene = preload("res://scenes/explosao.tscn") # Precarrega a cena da explosao
 
 # Quando a bomba entra em cena
 func _ready():
@@ -20,8 +22,11 @@ func _ready():
 
 # Processamento de cada frame
 func _physics_process(delta): 
-	animSpeed += 0.6 * delta
+	animSpeed += 1.6 * delta
 	if animSpeed >= 5:
+		var explosao = explosao_scene.instance() # Cria uma instância da explosao
+		get_parent().add_child(explosao) # Adiciona explosao
+		explosao.global_transform.origin = global_transform.origin # garante que vai iniciar da bomba
 		print("BOOM!")
 		explode()
 		queue_free() # Remove a bomba
