@@ -5,7 +5,7 @@ const velocidade = 6
 const velocidade_rotacao = 5 # Suavidade da rotação
 
 onready var mesh = $MeshInstance # Referência da mesh
-onready var respawn_point = get_parent().get_node("Position3D") # Ponto de respawn
+onready var respawn_point = get_parent().get_node("Position3D2") # Ponto de respawn
 var bomba_escena = preload("res://scenes/bomb3d.tscn") # Precarrega a cena da bomba
 
 func _ready():

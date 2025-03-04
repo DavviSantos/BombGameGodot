@@ -15,6 +15,7 @@ _global_script_class_icons={
 [application]
 
 config/name="CT3 BOMB"
+run/main_scene="res://Level.tscn"
 config/icon="res://immages/explosion.png"
 
 [editor_plugins]
