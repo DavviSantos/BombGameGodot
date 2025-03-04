@@ -3,6 +3,7 @@ extends Spatial
 # Variáveis
 var in_area = []
 var from_player
+var has_exploded = false
 
 var animplayer : AnimationPlayer = null
 var animSpeed : float = 1.0
@@ -17,20 +18,18 @@ var explosao_scene = preload("res://scenes/explosao.tscn") # Precarrega a cena d
 
 # Quando a bomba entra em cena
 func _ready():
+	add_to_group("bombs")  # Adiciona a bomba ao grupo
 	animplayer = get_node("AnimationPlayer")
 	animplayer.play("flash") # Animação de piscar
 
 # Processamento de cada frame
 func _physics_process(delta): 
 	animSpeed += 1.6 * delta
-	if animSpeed >= 5:
-		var explosao = explosao_scene.instance() # Cria uma instância da explosao
-		get_parent().add_child(explosao) # Adiciona explosao
-		explosao.global_transform.origin = global_transform.origin # garante que vai iniciar da bomba
-		print("BOOM!")
-		explode()
-		queue_free() # Remove a bomba
 	animplayer.set_speed_scale(animSpeed)
+
+	# Se a animação terminou, explode a bomba
+	if animSpeed >= 5:
+		explode()
 
 # Detecta corpos na área
 func _on_Area_body_entered(body):
@@ -43,13 +42,29 @@ func _on_Area_body_exited(body):
 
 # Explosão
 func explode():
+	if has_exploded:
+		return
+	has_exploded = true  # Marca que essa bomba já explodiu
+	
+	# Criar efeito de explosão
+	var explosao = explosao_scene.instance() # Cria uma instância da explosao
+	get_parent().add_child(explosao) # Adiciona explosao na cena
+	explosao.global_transform.origin = global_transform.origin # Garante que vai iniciar no mesmo local da bomba
+
+	print("BOOM!")
+
+	# Ativar outras bombas dentro do raio de explosão
+	for bomb in get_tree().get_nodes_in_group("bombs"):
+		if bomb != self and bomb.global_transform.origin.distance_to(global_transform.origin) <= EXPLOSION_RADIUS:
+			bomb.explode()  # Aciona a explosão da outra bomba
+	
 	# Destruir objetos no raio de explosão
 	for p in in_area:
 		if p.is_in_group("player"):
 			if p.has_method("exploded"):
 				p.exploded()
-
-	# Destruir blocos do GridMap em um raio de EXPLOSION_RADIUS
+  
+	# Destruir blocos do GridMap dentro do raio de explosão
 	var bomb_pos = global_transform.origin
 	var radius = int(EXPLOSION_RADIUS)
 
